@@ -1,6 +1,6 @@
 import 'question.dart';
 
-class QuizBrian {
+class QuizBrain {
   int _questionNumber = 0;
 
   List<Question> _questionBank = [
@@ -30,34 +30,35 @@ class QuizBrian {
         'In West Virginia, USA, if you accidentally hit an animal with your car, you are free to take it home to eat.',
         true),
   ];
-//Function prevents the question number from exceeding the bank
+  // Function prevents the question number from exceeding the bank
   void nextQuestion(){
     if (_questionNumber < _questionBank.length-1){
       _questionNumber++;
     }
   }
 
-  String getQuetionText() {
+  // Fixed typo: getQuetionText -> getQuestionText
+  String getQuestionText() {  // Fixed: was getQuetionText
     return _questionBank[_questionNumber].questionText;
   }
 
   bool getCorrectAnswer() {
     return _questionBank[_questionNumber].questionAnswer;
   }
-  //Method to check whether question number has reach the last index of the bank
+
+  // Method to check whether question number has reach the last index of the bank
   bool isFinished() {
     if (_questionNumber >= _questionBank.length - 1) {
-      //print statement to check that isFinished is returning true when you are indeed at the end of the quiz.
+      // print statement to check that isFinished is returning true when you are indeed at the end of the quiz.
       print('Now returning true');
       return true;
-
     } else {
       return false;
     }
   }
 
-  //Reset the questions
+  // Reset the questions
   void reset() {
-    _questionNumber =0;
+    _questionNumber = 0;
   }
 }

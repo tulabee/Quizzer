@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'quiz_brain.dart.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'quiz_brain.dart';
 
-QuizBrian quizBrian = QuizBrian();
+QuizBrain quizBrain = QuizBrain(); // Fixed typo: QuizBrian -> QuizBrain
 
 void main() => runApp(Quizzler());
 
@@ -14,7 +15,7 @@ class Quizzler extends StatelessWidget {
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: QuizPage(), // Add this line to show the QuizPage
+            child: QuizPage(),
           ),
         ),
       ),
@@ -28,32 +29,41 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Icon> scoreKeeper = [
-    Icon(
-      Icons.check,
-      color: Colors.green,
-    ),
-    Icon(
-      Icons.close,
-      color: Colors.red,
-    ),
-    Icon(
-      Icons.close,
-      color: Colors.red,
-    ),
-    Icon(
-      Icons.check,
-      color: Colors.green,
-    ),
-  ]; // Create the list for the scorekeeper
+  List<Icon> scoreKeeper = [];
 
-  List<Question> questionBank = [
-  Question(q: 'You can lead a cow down stairs but not up stairs.', a: false),
-  Question(q: 'Approximately one quarter of human bones are in the feet.', a: true),
-  Question(q: 'A slug\'s blood is green.', a: true),
-  ];
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer(); // Fixed typo
 
-  int questionNumber = 0;
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.', // Fixed typo: decs -> desc
+        ).show();
+
+        // Reset the questionNumber
+        quizBrain.reset();
+        // Empty out the scoreKeeper
+        scoreKeeper = [];
+      }
+      // If we've not reached the end, do the answer checking step
+      else {
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        quizBrain.nextQuestion(); // Fixed typo
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +77,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questionBank[questionNumber].questionText,
+                quizBrain.getQuestionText(), // Fixed typo
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -89,26 +99,15 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               style: TextButton.styleFrom(
-                backgroundColor: Colors.green, // Button color
-                padding: EdgeInsets.all(15.0), // Button padding
+                backgroundColor: Colors.green,
+                padding: EdgeInsets.all(15.0),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero, //Rectangle corners
+                  borderRadius: BorderRadius.zero,
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = quizBrian.getCorrectAnswer(questionNumber);
-
-                if (correctAnswer == true) {
-                  print('User got it right!');
-                } else {
-                  print('User got it wrong.');
-                }
-
-                setState(() {
-                  questionNumber++;
-                });
-
-                print(questionNumber);
+                // Fixed: Use the checkAnswer method consistently
+                checkAnswer(true);
               },
             ),
           ),
@@ -125,33 +124,21 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               style: TextButton.styleFrom(
-                backgroundColor: Colors.red, // Button color
-                padding: EdgeInsets.all(15.0), // Button padding
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.all(15.0),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero, //Rectangle corners
+                  borderRadius: BorderRadius.zero,
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = questionBank[questionNumber].questionAnswer;
-
-                if (correctAnswer == false) {
-                  print('User got it right!');
-                } else {
-                  print('User got it wrong.');
-                }
-
-                setState(() {
-                  questionNumber++;
-                });
-
-                print(questionNumber);
+                checkAnswer(false);
               },
             ),
           ),
         ),
         Row(
-          children: [],
-        ),
+          children: scoreKeeper,
+        )
       ],
     );
   }
